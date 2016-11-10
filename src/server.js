@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const http = require('http');
 const https = require('https');
 
@@ -36,15 +37,31 @@ class BitlyResolver {
     app.get('/resolveBitly', this.resolveBitly);
   }
 
-  resolveBitly(req, res) {
-    const urlToResolve = req.query.url;
-    let resolvedURL = 'http://no-idea-yet/' + urlToResolve;
+  resolveBitly(req, resp) {
+    const urlToResolve = (_.get(req, 'query.url') || '');
 
-    res.json({
-        status: '200',
-        resolvedUrl: resolvedURL
-      });
+    if (!_.includes(urlToResolve, 'bit.ly/')) {
+      resp.json({
+          status: '200',
+          resolvedUrl: 'Not a valid bit.ly URL'
+        });
+    } else {
+        const urlGetter = isHTTPS(urlToResolve) ? https : http;
+        console.log('getting ', urlToResolve);
+        urlGetter.get(urlToResolve, function(res) {
+          console.log('referring to: ', res.statusCode);
+          const resolvedURL = (res.statusCode >= 300 && res.statusCode < 400) ? res.headers.location : urlToResolve;
+          resp.json({
+              status: '200',
+              resolvedUrl: resolvedURL
+            });
+        });
+    }
   }
+}
+
+function isHTTPS(url) {
+  return (url || '').indexOf('https://') === 0;
 }
 
 new BitlyResolver();
