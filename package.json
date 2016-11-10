@@ -1,0 +1,19 @@
+{
+  "name": "bitlyresolverserver",
+  "version": "1.0.0",
+  "description": "A micro-service for resolving bitly URLs",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nirgit/bitlyResolverServer.git"
+  },
+  "author": "Nir Moav getnirm@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nirgit/bitlyResolverServer/issues"
+  },
+  "homepage": "https://github.com/nirgit/bitlyResolverServer#readme"
+}
