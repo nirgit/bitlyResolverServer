@@ -38,7 +38,7 @@ class BitlyResolver {
   }
 
   resolveBitly(req, resp) {
-    const urlToResolve = (_.get(req, 'query.url') || '');
+    let urlToResolve = (_.get(req, 'query.url') || '');
 
     if (!_.includes(urlToResolve, 'bit.ly/')) {
       resp.json({
@@ -47,6 +47,8 @@ class BitlyResolver {
         });
     } else {
         const urlGetter = isHTTPS(urlToResolve) ? https : http;
+        const prefix = urlToResolve.indexOf('http://') < 0 : 'http://' : '';
+        urlToResolve = prefix + urlToResolve;
         console.log('getting ', urlToResolve);
         urlGetter.get(urlToResolve, function(res) {
           console.log('referring to: ', res.statusCode);
