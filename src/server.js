@@ -47,7 +47,7 @@ class BitlyResolver {
         });
     } else {
         const urlGetter = isHTTPS(urlToResolve) ? https : http;
-        const prefix = urlToResolve.indexOf('http://') < 0 : 'http://' : '';
+        const prefix = urlToResolve.indexOf('http://') < 0 ? 'http://' : '';
         urlToResolve = prefix + urlToResolve;
         console.log('getting ', urlToResolve);
         urlGetter.get(urlToResolve, function(res) {
