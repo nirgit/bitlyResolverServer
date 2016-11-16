@@ -34,20 +34,35 @@ class BitlyResolver {
   }
 
   configureServerRouting(app) {
-    app.get('/resolveBitly', this.resolveBitly);
+    app.get('/resolveBitly', (req, res) => this.resolveBitly(req, res));
+    app.get('/resolveGoogl', (req, res) => this.resolveGoogl(req, res));
+  }
+
+  resolveGoogl(req, resp) {
+    this.resolveShortenedUrl(req, resp, 'goo.gl/');
   }
 
   resolveBitly(req, resp) {
+    this.resolveShortenedUrl(req, resp, 'bit.ly/');
+  }
+
+  resolveShortenedUrl(req, resp, urlFormat) {
     let urlToResolve = (_.get(req, 'query.url') || '');
 
-    if (!_.includes(urlToResolve, 'bit.ly/')) {
+    if (!_.includes(urlToResolve, urlFormat)) {
       resp.json({
           status: '200',
-          resolvedUrl: 'Not a valid bit.ly URL'
+          resolvedUrl: 'Not a valid ' + urlFormat + ' URL'
         });
     } else {
-        const urlGetter = isHTTPS(urlToResolve) ? https : http;
-        const prefix = urlToResolve.indexOf('http://') < 0 ? 'http://' : '';
+        const isUrlHTTPS = isHTTPS(urlToResolve);
+        const urlGetter = isUrlHTTPS ? https : http;
+        let prefix = '';
+        if (isUrlHTTPS) {
+          prefix = urlToResolve.indexOf('https://') < 0 ? 'https://' : '';
+        } else {
+          prefix = urlToResolve.indexOf('http://') < 0 ? 'http://' : '';
+        }
         urlToResolve = prefix + urlToResolve;
         console.log('getting ', urlToResolve);
         urlGetter.get(urlToResolve, function(res) {
