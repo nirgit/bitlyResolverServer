@@ -51,8 +51,8 @@ class BitlyResolver {
         urlToResolve = prefix + urlToResolve;
         console.log('getting ', urlToResolve);
         urlGetter.get(urlToResolve, function(res) {
-          console.log('referring to: ', res.statusCode);
           const resolvedURL = (res.statusCode >= 300 && res.statusCode < 400) ? res.headers.location : urlToResolve;
+          console.log('referring to: ', resolvedURL);
           resp.json({
               status: '200',
               resolvedUrl: resolvedURL
