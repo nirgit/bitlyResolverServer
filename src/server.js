@@ -36,6 +36,7 @@ class BitlyResolver {
   configureServerRouting(app) {
     app.get('/resolveBitly', (req, res) => this.resolveBitly(req, res));
     app.get('/resolveGoogl', (req, res) => this.resolveGoogl(req, res));
+    app.get('/resolveOwly', (req, res) => this.resolveOwly(req, res));
   }
 
   resolveGoogl(req, resp) {
@@ -44,6 +45,10 @@ class BitlyResolver {
 
   resolveBitly(req, resp) {
     this.resolveShortenedUrl(req, resp, 'bit.ly/');
+  }
+
+  resolveOwly(req, resp) {
+    this.resolveShortenedUrl(req, resp, 'ow.ly/');
   }
 
   resolveShortenedUrl(req, resp, urlFormat) {
