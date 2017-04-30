@@ -2,9 +2,9 @@
   "name": "bitlyresolverserver",
   "version": "1.0.0",
   "description": "A micro-service for resolving bitly URLs",
-  "main": "src/server.js",
+  "main": "src/main.js",
   "scripts": {
-    "start": "node src/server.js"
+    "start": "node src/main.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,7 @@
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "express": "^4.14.0",
-    "lodash": "^4.16.6"
+    "lodash": "^4.16.6",
+    "pm2": "^2.4.6"
   }
 }
