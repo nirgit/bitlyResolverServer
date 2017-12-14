@@ -7,6 +7,7 @@ const https = require('https');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const uu = require('url-unshort')();
 
 const DEFAULT_PORT = 5000;
 
@@ -34,51 +35,33 @@ class BitlyResolver {
   }
 
   configureServerRouting(app) {
-    app.get('/resolveBitly', (req, res) => this.resolveBitly(req, res));
-    app.get('/resolveGoogl', (req, res) => this.resolveGoogl(req, res));
-    app.get('/resolveOwly', (req, res) => this.resolveOwly(req, res));
+    app.get('/resolve', (req, res) => this.resolveShortenedUrl(req, res));
+    app.get('/resolveBitly', (req, res) => this.resolveShortenedUrl(req, res));
+    app.get('/resolveGoogl', (req, res) => this.resolveShortenedUrl(req, res));
+    app.get('/resolveOwly', (req, res) => this.resolveShortenedUrl(req, res));
   }
 
-  resolveGoogl(req, resp) {
-    this.resolveShortenedUrl(req, resp, 'goo.gl/');
-  }
-
-  resolveBitly(req, resp) {
-    this.resolveShortenedUrl(req, resp, 'bit.ly/');
-  }
-
-  resolveOwly(req, resp) {
-    this.resolveShortenedUrl(req, resp, 'ow.ly/');
-  }
-
-  resolveShortenedUrl(req, resp, urlFormat) {
+  resolveShortenedUrl(req, resp) {
     let urlToResolve = (_.get(req, 'query.url') || '');
 
-    if (!_.includes(urlToResolve, urlFormat)) {
-      resp.json({
-          status: '200',
-          resolvedUrl: 'Not a valid ' + urlFormat + ' URL'
-        });
+    const isUrlHTTPS = isHTTPS(urlToResolve);
+    let prefix = '';
+    if (isUrlHTTPS) {
+      prefix = urlToResolve.indexOf('https://') < 0 ? 'https://' : '';
     } else {
-        const isUrlHTTPS = isHTTPS(urlToResolve);
-        const urlGetter = isUrlHTTPS ? https : http;
-        let prefix = '';
-        if (isUrlHTTPS) {
-          prefix = urlToResolve.indexOf('https://') < 0 ? 'https://' : '';
-        } else {
-          prefix = urlToResolve.indexOf('http://') < 0 ? 'http://' : '';
-        }
-        urlToResolve = prefix + urlToResolve;
-        console.log('getting ', urlToResolve);
-        urlGetter.get(urlToResolve, function(res) {
-          const resolvedURL = (res.statusCode >= 300 && res.statusCode < 400) ? res.headers.location : urlToResolve;
-          console.log('referring to: ', resolvedURL);
-          resp.json({
-              status: '200',
-              resolvedUrl: resolvedURL
-            });
-        });
+      prefix = urlToResolve.indexOf('http://') < 0 ? 'http://' : '';
     }
+    urlToResolve = prefix + urlToResolve;
+    console.log('getting ', urlToResolve);
+    uu.expand(urlToResolve).then(resolvedURL => {
+      resp.json({
+        status: '200',
+        resolvedUrl: resolvedURL || 'Couldn\'t resolve that URL'
+      });
+    }).catch(err => resp.json({
+      status: '200',
+      resolvedUrl: 'Failed resolving ' + urlToResolve + ' URL'
+    }));
   }
 }
 
