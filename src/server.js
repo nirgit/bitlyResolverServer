@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const uu = require('url-unshort')();
 
 const DEFAULT_PORT = 5000;
+const EXTENSION_HOME_URL = 'https://nirgit.github.io/bitlyResolverCE/';
 
 class BitlyResolver {
   constructor() {
@@ -35,10 +36,15 @@ class BitlyResolver {
   }
 
   configureServerRouting(app) {
+    app.get('/', (req, res) => this.redirectUserToHome(req, res));
     app.get('/resolve', (req, res) => this.resolveShortenedUrl(req, res));
     app.get('/resolveBitly', (req, res) => this.resolveShortenedUrl(req, res));
     app.get('/resolveGoogl', (req, res) => this.resolveShortenedUrl(req, res));
     app.get('/resolveOwly', (req, res) => this.resolveShortenedUrl(req, res));
+  }
+
+  redirectUserToHome(req, resp) {
+    resp.redirect(EXTENSION_HOME_URL);
   }
 
   resolveShortenedUrl(req, resp) {

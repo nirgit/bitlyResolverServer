@@ -25,6 +25,6 @@
     "url-unshort": "^5.0.0"
   },
   "engines": {
-    "node": "6.11.1"
+    "node": "8.7.1"
   }
 }
